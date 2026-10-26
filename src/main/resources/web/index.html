@@ -1108,10 +1108,14 @@
                     if (d <= r && a.active && b.active) {
                         const rssi = -42 - Math.round((d / r) * 45);
                         links.push({
+                            a: a.id,
+                            b: b.id,
                             source: a.id,
                             target: b.id,
+                            dist: parseFloat(d.toFixed(1)),
                             distance: parseFloat(d.toFixed(1)),
                             rssi: rssi,
+                            quality: parseFloat(Math.max(0, 1.0 - (d / r)).toFixed(2)),
                             lossRate: parseFloat((d > r * 0.8 ? 0.08 : 0.01).toFixed(2))
                         });
                     }
@@ -1777,8 +1781,8 @@
             // 2. Draw Bluetooth Mesh Links
             const links = state.links || [];
             links.forEach(l => {
-                const na = nodes.find(n => n.id === l.a);
-                const nb = nodes.find(n => n.id === l.b);
+                const na = nodes.find(n => n.id === (l.a || l.source));
+                const nb = nodes.find(n => n.id === (l.b || l.target));
                 if (na && nb) {
                     const pa = toScreen(na.x, na.y);
                     const pb = toScreen(nb.x, nb.y);
