@@ -1050,7 +1050,11 @@
         // =========================================================================
         // HYBRID ARCHITECTURE: NATIVE JAVA BACKEND + VERCEL CLIENT SIMULATION ENGINE
         // =========================================================================
-        let isClientEngineMode = false;
+        const isCloudHosting = (typeof window !== 'undefined' && 
+            window.location.hostname !== 'localhost' && 
+            window.location.hostname !== '127.0.0.1' && 
+            window.location.hostname !== '');
+        let isClientEngineMode = isCloudHosting;
 
         const CLIENT_DEVICE_NAMES = {
             "N1": "Phone 1", "N2": "Phone 2", "N3": "Phone 3", "N4": "Phone 4",
@@ -1162,7 +1166,17 @@
                 transport: { ...clientSimState.transport },
                 nodes: clientSimState.nodes.map(n => ({ ...n })),
                 links: getClientLinks(),
-                messages: clientSimState.messages.map(m => ({ ...m, route: [...(m.route || [])], reachedNodes: [...(m.reachedNodes || [])] }))
+                messages: clientSimState.messages.map(m => ({
+                    ...m,
+                    broadcast: m.isBroadcast,
+                    currentHop: m.currentHopIndex,
+                    totalHops: m.totalHopsTraversed,
+                    senderName: CLIENT_DEVICE_NAMES[m.sender] || m.sender,
+                    destName: CLIENT_DEVICE_NAMES[m.destination] || m.destination,
+                    broadcastRecipients: [...(m.reachedNodes || [])],
+                    route: [...(m.route || [])],
+                    reachedNodes: [...(m.reachedNodes || [])]
+                }))
             };
         }
 
@@ -1391,25 +1405,30 @@
         // Global Fetch Interceptor with instant failover to embedded engine
         const _systemFetch = window.fetch.bind(window);
         window.fetch = async function(url, options = {}) {
-            if (!isClientEngineMode && typeof url === 'string' && url.startsWith('/api/')) {
+            if (typeof url === 'string' && url.startsWith('/api/')) {
+                // If in cloud / Vercel mode, immediately handle via client simulation engine
+                if (isClientEngineMode) {
+                    return handleClientSimulationRequest(url, options);
+                }
+                // If on localhost, probe the Java backend
                 try {
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 1600);
+                    const timeoutId = setTimeout(() => controller.abort(), 1200);
                     const res = await _systemFetch(url, { ...options, signal: controller.signal });
                     clearTimeout(timeoutId);
-                    if (res && res.ok) {
+                    const contentType = res.headers ? res.headers.get('content-type') : '';
+                    if (res && res.ok && contentType && contentType.includes('application/json')) {
                         return res;
                     }
-                } catch (err) {
-                    console.log("Java backend not detected at " + url + ". Switching seamlessly to embedded Client Simulation Engine (Vercel Standalone Mode).");
-                    isClientEngineMode = true;
-                    const statusTag = document.getElementById('lblP2PStatus');
-                    if (statusTag) {
-                        statusTag.textContent = "⚡ P2P MESH ONLINE (VERCEL STANDALONE)";
-                    }
+                } catch (err) {}
+
+                // Failover to embedded client simulation engine
+                console.log("Java backend not responding at " + url + " -> Activating Client Simulation Engine.");
+                isClientEngineMode = true;
+                const statusTag = document.getElementById('lblP2PStatus');
+                if (statusTag) {
+                    statusTag.textContent = "⚡ P2P MESH ONLINE (VERCEL STANDALONE)";
                 }
-            }
-            if (isClientEngineMode && typeof url === 'string' && url.startsWith('/api/')) {
                 return handleClientSimulationRequest(url, options);
             }
             return _systemFetch(url, options);
@@ -1418,9 +1437,18 @@
         window.addEventListener('DOMContentLoaded', () => {
             canvas = document.getElementById('topologyCanvas');
             ctx = canvas.getContext('2d');
+
+            // 1. Immediately initialize with valid state so canvas & UI render on first frame
+            state = getClientStateSnapshot();
+            if (isClientEngineMode) {
+                const statusTag = document.getElementById('lblP2PStatus');
+                if (statusTag) statusTag.textContent = "⚡ P2P MESH ONLINE (VERCEL STANDALONE)";
+            }
+            updateDisplay();
             resize();
             window.addEventListener('resize', resize);
 
+            // 2. Query state (checks Java backend if local, or confirms client engine)
             fetchState();
             setInterval(fetchStateSilently, 1400);
             startAnimLoop();
@@ -1438,8 +1466,10 @@
 
         function resize() {
             if (!canvas) return;
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight - 38;
+            const parent = canvas.parentElement;
+            if (!parent) return;
+            canvas.width = Math.max(300, parent.clientWidth);
+            canvas.height = Math.max(300, parent.clientHeight - 38);
             if (state) renderCanvas();
         }
 
@@ -1455,7 +1485,7 @@
         }
 
         async function fetchStateSilently() {
-            if (autoTimer) return;
+            if (autoTimer || isClientEngineMode) return;
             try {
                 const res = await fetch('/api/state');
                 state = await res.json();
