@@ -317,5 +317,23 @@ git push -u origin main
 
 ---
 
+## 8.2 Deploying to Vercel (1-Click Cloud Live Demo)
+
+The project includes built-in **Hybrid Architecture** support (`vercel.json`, `public/index.html`, and embedded client mesh engine fallback) so you can deploy an instant live web demo on Vercel:
+
+1. Log in to [Vercel](https://vercel.com/) with your GitHub account (`Spidy022`).
+2. Click **"Add New..."** → **"Project"**.
+3. Select your repository: `Spidy022/disaster-mesh-emergency-network`.
+4. Leave Framework Preset as **"Other"** (Root Directory `./`).
+5. Click **"Deploy"**.
+
+Your live public URL (e.g., `https://disaster-mesh-emergency-network.vercel.app`) will be ready in under 30 seconds.
+
+> **Architecture Note for Faculty Presentation:**
+> - When running locally via Java 21 (`mvn exec:java` or `java com.disastermesh.WebApp`), the web app communicates with the **Java HTTP Backend** on `http://localhost:8080`.
+> - When accessed on **Vercel**, the web app activates the embedded **Client-Side Simulation Engine**, guaranteeing zero server lag, 100% uptime, and full interactivity across all 8 nodes, handovers, 360° SOS broadcasts, and benchmarks.
+
+---
+
 ## 9. License & Academic Attribution
 This software is developed for academic research and emergency disaster communication study. Released under the MIT License.

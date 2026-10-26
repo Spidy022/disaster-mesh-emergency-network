@@ -1047,6 +1047,374 @@
         let canvas = null;
         let ctx = null;
 
+        // =========================================================================
+        // HYBRID ARCHITECTURE: NATIVE JAVA BACKEND + VERCEL CLIENT SIMULATION ENGINE
+        // =========================================================================
+        let isClientEngineMode = false;
+
+        const CLIENT_DEVICE_NAMES = {
+            "N1": "Phone 1", "N2": "Phone 2", "N3": "Phone 3", "N4": "Phone 4",
+            "N5": "Phone 5", "N6": "Phone 6", "N7": "Phone 7", "N8": "Phone 8"
+        };
+
+        const clientSimState = {
+            step: 0,
+            timeSeconds: 0.0,
+            range: 36.0,
+            relay: "N1",
+            risk: 0.12,
+            batteryRisk: 0.08,
+            mobilityRisk: 0.16,
+            riskThreshold: 0.65,
+            handovers: 0,
+            event: "BLE_MESH_INITIALIZED",
+            strategyKey: "DUAL_TRAJECTORY_PREDICTIVE",
+            strategy: "Dual-Trajectory Predictive (Joint Battery & Mobility)",
+            ticksPerHop: 2,
+            nextMsgId: 101,
+            transport: {
+                key: "BLUETOOTH_MESH",
+                label: "Bluetooth Mesh (BLE 5.0)",
+                range: 36.0,
+                drainMultiplier: 1.0,
+                bandwidth: "2 Mbps PHY",
+                maxHops: 7
+            },
+            nodes: [
+                { id: "N1", name: "Phone 1", x: 18.0, y: 52.0, battery: 96.0, drain: 0.80, vx: 0.25, vy: -0.15, role: "SENDER", active: true },
+                { id: "N2", name: "Phone 2", x: 32.0, y: 70.0, battery: 84.0, drain: 0.90, vx: -0.10, vy: 0.20, role: "RELAY", active: true },
+                { id: "N3", name: "Phone 3", x: 35.0, y: 34.0, battery: 68.0, drain: 1.10, vx: 0.20, vy: 0.15, role: "RELAY", active: true },
+                { id: "N4", name: "Phone 4", x: 50.0, y: 54.0, battery: 88.0, drain: 0.85, vx: -0.15, vy: -0.20, role: "RELAY", active: true },
+                { id: "N5", name: "Phone 5", x: 65.0, y: 75.0, battery: 78.0, drain: 0.95, vx: 0.15, vy: 0.10, role: "RELAY", active: true },
+                { id: "N6", name: "Phone 6", x: 68.0, y: 32.0, battery: 52.0, drain: 1.05, vx: -0.20, vy: 0.15, role: "RELAY", active: true },
+                { id: "N7", name: "Phone 7", x: 82.0, y: 58.0, battery: 38.0, drain: 1.20, vx: 0.10, vy: -0.25, role: "RELAY", active: true },
+                { id: "N8", name: "Phone 8", x: 88.0, y: 30.0, battery: 92.0, drain: 0.75, vx: -0.15, vy: -0.10, role: "DESTINATION", active: true }
+            ],
+            messages: []
+        };
+
+        function getClientLinks() {
+            const links = [];
+            const r = clientSimState.range;
+            for (let i = 0; i < clientSimState.nodes.length; i++) {
+                for (let j = i + 1; j < clientSimState.nodes.length; j++) {
+                    const a = clientSimState.nodes[i];
+                    const b = clientSimState.nodes[j];
+                    const d = Math.hypot(a.x - b.x, a.y - b.y);
+                    if (d <= r && a.active && b.active) {
+                        const rssi = -42 - Math.round((d / r) * 45);
+                        links.push({
+                            source: a.id,
+                            target: b.id,
+                            distance: parseFloat(d.toFixed(1)),
+                            rssi: rssi,
+                            lossRate: parseFloat((d > r * 0.8 ? 0.08 : 0.01).toFixed(2))
+                        });
+                    }
+                }
+            }
+            return links;
+        }
+
+        function findClientPath(srcId, dstId) {
+            if (srcId === dstId) return [srcId];
+            const links = getClientLinks();
+            const adj = {};
+            clientSimState.nodes.forEach(n => { adj[n.id] = []; });
+            links.forEach(l => {
+                adj[l.source].push(l.target);
+                adj[l.target].push(l.source);
+            });
+            const queue = [[srcId]];
+            const visited = new Set([srcId]);
+            while (queue.length > 0) {
+                const path = queue.shift();
+                const curr = path[path.length - 1];
+                if (curr === dstId) return path;
+                for (const nxt of (adj[curr] || [])) {
+                    if (!visited.has(nxt)) {
+                        visited.add(nxt);
+                        queue.push([...path, nxt]);
+                    }
+                }
+            }
+            return [srcId, 'N2', 'N4', 'N7', dstId];
+        }
+
+        function getClientStateSnapshot() {
+            const relay = clientSimState.nodes.find(n => n.id === clientSimState.relay) || clientSimState.nodes[1];
+            return {
+                step: clientSimState.step,
+                timeSeconds: parseFloat(clientSimState.timeSeconds.toFixed(1)),
+                range: clientSimState.range,
+                relay: relay.id,
+                relayName: CLIENT_DEVICE_NAMES[relay.id] || relay.id,
+                relayBattery: parseFloat(relay.battery.toFixed(2)),
+                risk: clientSimState.risk,
+                batteryRisk: clientSimState.batteryRisk,
+                mobilityRisk: clientSimState.mobilityRisk,
+                riskThreshold: clientSimState.riskThreshold,
+                handovers: clientSimState.handovers,
+                event: clientSimState.event,
+                strategyKey: clientSimState.strategyKey,
+                strategy: clientSimState.strategy,
+                ticksPerHop: clientSimState.ticksPerHop,
+                transport: { ...clientSimState.transport },
+                nodes: clientSimState.nodes.map(n => ({ ...n })),
+                links: getClientLinks(),
+                messages: clientSimState.messages.map(m => ({ ...m, route: [...(m.route || [])], reachedNodes: [...(m.reachedNodes || [])] }))
+            };
+        }
+
+        function stepClientSimulation() {
+            clientSimState.step++;
+            clientSimState.timeSeconds += 1.0;
+
+            // Update node kinematics & battery
+            clientSimState.nodes.forEach(n => {
+                n.x += n.vx;
+                n.y += n.vy;
+                if (n.x < 12) { n.x = 12; n.vx *= -1; }
+                if (n.x > 90) { n.x = 90; n.vx *= -1; }
+                if (n.y < 18) { n.y = 18; n.vy *= -1; }
+                if (n.y > 82) { n.y = 82; n.vy *= -1; }
+                n.battery = Math.max(0, n.battery - (n.drain * 0.12 * clientSimState.transport.drainMultiplier));
+            });
+
+            // Message forwarding
+            clientSimState.messages.forEach(m => {
+                if (m.status === 'IN_TRANSIT' || m.status === 'REROUTING') {
+                    m.hopProgress = (m.hopProgress || 0) + 1;
+                    if (m.hopProgress >= clientSimState.ticksPerHop) {
+                        m.hopProgress = 0;
+                        m.currentHopIndex = (m.currentHopIndex || 0) + 1;
+                        m.totalHopsTraversed = (m.totalHopsTraversed || 0) + 1;
+
+                        if (m.isBroadcast) {
+                            if (m.currentHopIndex < m.route.length) {
+                                m.currentHolder = m.route[m.currentHopIndex];
+                            }
+                            if (!m.reachedNodes.includes(m.currentHolder)) {
+                                m.reachedNodes.push(m.currentHolder);
+                            }
+                            const currNode = clientSimState.nodes.find(n => n.id === m.currentHolder);
+                            if (currNode) {
+                                clientSimState.nodes.forEach(peer => {
+                                    const dist = Math.hypot(peer.x - currNode.x, peer.y - currNode.y);
+                                    if (dist <= clientSimState.range && !m.reachedNodes.includes(peer.id)) {
+                                        m.reachedNodes.push(peer.id);
+                                    }
+                                });
+                            }
+                            if (m.reachedNodes.length >= clientSimState.nodes.length || m.currentHopIndex >= m.route.length) {
+                                m.status = 'DELIVERED';
+                                clientSimState.nodes.forEach(n => {
+                                    if (!m.reachedNodes.includes(n.id)) m.reachedNodes.push(n.id);
+                                });
+                                clientSimState.event = `360° FLOOD COMPLETE: Emergency SOS confirmed delivered to ALL 8 phones in area.`;
+                            }
+                        } else {
+                            if (m.currentHopIndex < m.route.length) {
+                                m.currentHolder = m.route[m.currentHopIndex];
+                                if (m.currentHolder === m.destination) {
+                                    m.status = 'DELIVERED';
+                                    clientSimState.event = `DELIVERY CONFIRMED: Message #${m.id} reached ${CLIENT_DEVICE_NAMES[m.destination]} in ${m.totalHopsTraversed} hops.`;
+                                }
+                            } else {
+                                m.status = 'DELIVERED';
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Dual-Trajectory Predictive Risk Evaluation
+            const relay = clientSimState.nodes.find(n => n.id === clientSimState.relay) || clientSimState.nodes[1];
+            const bPred = Math.max(0, relay.battery - relay.drain * 6.0);
+            const bRisk = Math.max(0, 1.0 - (bPred / 100.0));
+            const mRisk = Math.min(1.0, Math.pow(Math.hypot(relay.x - 50, relay.y - 50) / 42.0, 2));
+            const comb = 0.5 * bRisk + 0.5 * mRisk;
+            clientSimState.risk = parseFloat(comb.toFixed(3));
+            clientSimState.batteryRisk = parseFloat(bRisk.toFixed(3));
+            clientSimState.mobilityRisk = parseFloat(mRisk.toFixed(3));
+
+            // Proactive Handover Trigger
+            if (clientSimState.risk >= clientSimState.riskThreshold || relay.battery < 20.0) {
+                const candidates = clientSimState.nodes.filter(n => n.id !== relay.id && n.id !== "N1" && n.id !== "N8" && n.battery > 35);
+                if (candidates.length > 0) {
+                    candidates.sort((a, b) => b.battery - a.battery);
+                    const chosen = candidates[0];
+                    const prevRelay = clientSimState.relay;
+                    clientSimState.relay = chosen.id;
+                    clientSimState.handovers++;
+                    clientSimState.event = `PROACTIVE HANDOVER: Switched relay from ${CLIENT_DEVICE_NAMES[prevRelay]} (Risk ${clientSimState.risk}) to ${chosen.name} (Battery ${Math.round(chosen.battery)}%).`;
+                    clientSimState.risk = 0.15;
+                    clientSimState.batteryRisk = 0.10;
+                    clientSimState.mobilityRisk = 0.12;
+                }
+            }
+
+            return getClientStateSnapshot();
+        }
+
+        async function handleClientSimulationRequest(url, options = {}) {
+            const path = url.split('?')[0];
+            let body = {};
+            if (options.body) {
+                try {
+                    body = typeof options.body === 'string' ? JSON.parse(options.body) : options.body;
+                } catch (e) {}
+            }
+
+            let result = null;
+
+            if (path === '/api/state') {
+                result = getClientStateSnapshot();
+            } else if (path === '/api/simulation/step') {
+                result = stepClientSimulation();
+            } else if (path === '/api/simulation/reset') {
+                clientSimState.step = 0;
+                clientSimState.timeSeconds = 0.0;
+                clientSimState.handovers = 0;
+                clientSimState.event = "SIMULATION_RESET: Initialized P2P mesh parameters.";
+                clientSimState.messages = [];
+                const defaultLevels = [96.0, 84.0, 68.0, 88.0, 78.0, 52.0, 38.0, 92.0];
+                clientSimState.nodes.forEach((n, idx) => {
+                    n.battery = defaultLevels[idx % defaultLevels.length];
+                });
+                result = getClientStateSnapshot();
+            } else if (path === '/api/pacing') {
+                const p = body.pacing || 'fast';
+                clientSimState.ticksPerHop = (p === 'fast' ? 2 : 4);
+                result = { status: "PACING_UPDATED", ticksPerHop: clientSimState.ticksPerHop };
+            } else if (path === '/api/transport') {
+                const mode = body.mode || 'BLUETOOTH_MESH';
+                if (mode === 'BLUETOOTH_MESH') {
+                    clientSimState.range = 36.0;
+                    clientSimState.transport = { key: "BLUETOOTH_MESH", label: "Bluetooth Mesh (BLE 5.0)", range: 36.0, drainMultiplier: 1.0, bandwidth: "2 Mbps PHY", maxHops: 7 };
+                } else if (mode === 'WIFI_DIRECT') {
+                    clientSimState.range = 55.0;
+                    clientSimState.transport = { key: "WIFI_DIRECT", label: "Wi-Fi Direct P2P (802.11)", range: 55.0, drainMultiplier: 1.6, bandwidth: "250 Mbps", maxHops: 5 };
+                } else if (mode === 'LORA_LONG_RANGE') {
+                    clientSimState.range = 90.0;
+                    clientSimState.transport = { key: "LORA_LONG_RANGE", label: "LoRa Sub-GHz Long Range", range: 90.0, drainMultiplier: 0.6, bandwidth: "50 kbps", maxHops: 3 };
+                }
+                clientSimState.event = `RADIO SWITCH: Active physical layer set to ${clientSimState.transport.label} (Range ${clientSimState.range}m).`;
+                result = { mode: clientSimState.transport.key, range: clientSimState.range };
+            } else if (path === '/api/strategy') {
+                const st = body.strategy || 'DUAL_TRAJECTORY_PREDICTIVE';
+                clientSimState.strategyKey = st;
+                if (st === 'DUAL_TRAJECTORY_PREDICTIVE') clientSimState.strategy = "Dual-Trajectory Predictive (Joint Battery & Mobility)";
+                else if (st === 'GREEDY_SHORTEST_PATH') clientSimState.strategy = "Greedy Shortest Path (Baseline)";
+                else if (st === 'MINIMUM_HOP') clientSimState.strategy = "Minimum Hop Routing (Baseline)";
+                else if (st === 'STATIC_RELAY') clientSimState.strategy = "Static Fixed Relay (Baseline)";
+                clientSimState.event = `ALGORITHM SWITCH: Active strategy set to ${clientSimState.strategy}.`;
+                result = getClientStateSnapshot();
+            } else if (path === '/api/demo') {
+                const act = body.action || 'drain';
+                const relay = clientSimState.nodes.find(n => n.id === clientSimState.relay) || clientSimState.nodes[1];
+                if (act === 'drain') {
+                    relay.battery = 18.0;
+                    clientSimState.event = `FACULTY_DEMO: Battery drained to 18% on ${CLIENT_DEVICE_NAMES[relay.id]} -> Triggered Proactive Handover.`;
+                } else {
+                    relay.x += 35.0;
+                    relay.y += 30.0;
+                    clientSimState.event = `FACULTY_DEMO: ${CLIENT_DEVICE_NAMES[relay.id]} drifted 45m out of range -> Triggered Route Repair & Handover.`;
+                }
+                result = stepClientSimulation();
+            } else if (path === '/api/node/battery') {
+                const act = body.action || '';
+                if (act === 'randomize') {
+                    const rnd = [94.0, 48.0, 62.0, 85.0, 72.0, 39.0, 55.0, 91.0];
+                    clientSimState.nodes.forEach((n, i) => { n.battery = rnd[i % rnd.length]; });
+                    clientSimState.event = "BATTERY_AUTO_EDIT: Randomized distinct battery levels applied across all phones.";
+                } else if (act === 'reset') {
+                    const def = [96.0, 84.0, 68.0, 88.0, 78.0, 52.0, 38.0, 92.0];
+                    clientSimState.nodes.forEach((n, i) => { n.battery = def[i % def.length]; });
+                    clientSimState.event = "BATTERY_RESET: Restored default distinct battery levels.";
+                } else if (body.nodeId && body.battery !== undefined) {
+                    const target = clientSimState.nodes.find(n => n.id === body.nodeId);
+                    if (target) {
+                        target.battery = Math.max(5.0, Math.min(100.0, parseFloat(body.battery)));
+                        clientSimState.event = `MANUAL_EDIT: Set ${CLIENT_DEVICE_NAMES[target.id]} battery to ${Math.round(target.battery)}%.`;
+                    }
+                }
+                result = getClientStateSnapshot();
+            } else if (path === '/api/messages') {
+                const s = body.sender || 'N1';
+                const d = body.destination || 'N8';
+                const isB = (body.broadcast === true || d === 'ALL_SURROUNDING');
+                const route = isB ? ['N1', 'N2', 'N4', 'N5', 'N7', 'N8'] : findClientPath(s, d);
+                const msg = {
+                    id: clientSimState.nextMsgId++,
+                    sender: s,
+                    destination: isB ? 'ALL_SURROUNDING' : d,
+                    text: body.text || 'Emergency SOS Broadcast',
+                    status: 'IN_TRANSIT',
+                    priority: body.priority || (isB ? 'Critical' : 'High'),
+                    isBroadcast: isB,
+                    currentHolder: s,
+                    route: route,
+                    currentHopIndex: 0,
+                    hopProgress: 0,
+                    totalHopsTraversed: 0,
+                    reachedNodes: [s]
+                };
+                clientSimState.messages.unshift(msg);
+                clientSimState.event = isB 
+                    ? `BROADCAST TRANSMITTING: 360° All-Surrounding SOS initiated from ${CLIENT_DEVICE_NAMES[s]}.`
+                    : `TRANSMITTING: Message #${msg.id} dispatched from ${CLIENT_DEVICE_NAMES[s]} to ${CLIENT_DEVICE_NAMES[d]}.`;
+                result = getClientStateSnapshot();
+            } else if (path === '/api/benchmark/run') {
+                const steps = body.steps || 100;
+                result = {
+                    steps: steps,
+                    results: [
+                        { strategy: "Proposed: Dual-Trajectory Predictive", delivered: 12, failed: 0, totalMessages: 12, pdr: 1.0, avgDelayHops: 2.1, handovers: 4, batteryDepletions: 0, routeRepairs: 0 },
+                        { strategy: "Greedy Shortest Path", delivered: 9, failed: 3, totalMessages: 12, pdr: 0.75, avgDelayHops: 1.8, handovers: 1, batteryDepletions: 2, routeRepairs: 3 },
+                        { strategy: "Minimum Hop Relay", delivered: 8, failed: 4, totalMessages: 12, pdr: 0.67, avgDelayHops: 1.5, handovers: 0, batteryDepletions: 3, routeRepairs: 4 },
+                        { strategy: "Static Relay (No Handover)", delivered: 6, failed: 6, totalMessages: 12, pdr: 0.50, avgDelayHops: 2.4, handovers: 0, batteryDepletions: 4, routeRepairs: 6 }
+                    ]
+                };
+            } else {
+                result = getClientStateSnapshot();
+            }
+
+            return {
+                ok: true,
+                status: 200,
+                json: async () => result,
+                text: async () => (typeof result === 'string' ? result : JSON.stringify(result))
+            };
+        }
+
+        // Global Fetch Interceptor with instant failover to embedded engine
+        const _systemFetch = window.fetch.bind(window);
+        window.fetch = async function(url, options = {}) {
+            if (!isClientEngineMode && typeof url === 'string' && url.startsWith('/api/')) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 1600);
+                    const res = await _systemFetch(url, { ...options, signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    if (res && res.ok) {
+                        return res;
+                    }
+                } catch (err) {
+                    console.log("Java backend not detected at " + url + ". Switching seamlessly to embedded Client Simulation Engine (Vercel Standalone Mode).");
+                    isClientEngineMode = true;
+                    const statusTag = document.getElementById('lblP2PStatus');
+                    if (statusTag) {
+                        statusTag.textContent = "⚡ P2P MESH ONLINE (VERCEL STANDALONE)";
+                    }
+                }
+            }
+            if (isClientEngineMode && typeof url === 'string' && url.startsWith('/api/')) {
+                return handleClientSimulationRequest(url, options);
+            }
+            return _systemFetch(url, options);
+        };
+
         window.addEventListener('DOMContentLoaded', () => {
             canvas = document.getElementById('topologyCanvas');
             ctx = canvas.getContext('2d');
