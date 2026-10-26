@@ -9,22 +9,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-deep: #0b0f19;
-            --bg-card: #131b2e;
-            --bg-elevated: #1e293b;
-            --bg-hover: #334155;
-            --border-line: #1e293d;
-            --border-active: #3b82f6;
+            /* Coolors Palette: #388087 | #6FB3B8 | #BADFE7 | #C2EDCE | #F6F6F2 */
+            --teal-deep: #388087;        /* Primary accent: buttons, active borders, key badges */
+            --teal-soft: #6FB3B8;        /* Secondary: hover, ranges, active link glow */
+            --ice-blue: #BADFE7;         /* Soft surface highlights, timer pill, node halos */
+            --mint-soft: #C2EDCE;        /* Delivered states, SOS reached, battery positive */
+            --bg-alabaster: #F6F6F2;     /* Core background */
 
-            --text-main: #f8fafc;
-            --text-sub: #94a3b8;
-            --text-dim: #64748b;
+            --bg-deep: #F6F6F2;
+            --bg-card: #FFFFFF;
+            --bg-elevated: #F0F6F7;
+            --bg-hover: #E3F0F2;
+            --border-line: #D0E4E8;
+            --border-active: #388087;
 
-            --mesh-blue: #3b82f6;
-            --mesh-cyan: #06b6d4;
-            --mesh-green: #10b981;
-            --mesh-amber: #f59e0b;
-            --mesh-red: #ef4444;
+            --text-main: #1A393C;        /* High-contrast deep slate-teal text */
+            --text-sub: #496F73;         /* Medium slate-teal text */
+            --text-dim: #799CA0;         /* Muted slate-teal label text */
+
+            --mesh-blue: #388087;
+            --mesh-cyan: #6FB3B8;
+            --mesh-green: #2B7A58;
+            --mesh-amber: #D97757;       /* Terracotta / Coral accent for alerts & handovers */
+            --mesh-red: #D14949;
 
             --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
@@ -45,7 +52,7 @@
 
         /* Top Bar */
         header {
-            background: var(--bg-card);
+            background: #FFFFFF;
             border-bottom: 1px solid var(--border-line);
             padding: 10px 20px;
             display: flex;
@@ -54,6 +61,7 @@
             gap: 16px;
             flex-shrink: 0;
             z-index: 30;
+            box-shadow: 0 1px 3px rgba(56, 128, 135, 0.05);
         }
 
         .brand-section {
@@ -66,12 +74,12 @@
             width: 32px;
             height: 32px;
             border-radius: 8px;
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            background: linear-gradient(135deg, #388087, #265d63);
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
-            box-shadow: 0 2px 8px rgba(37,99,235,0.4);
+            box-shadow: 0 2px 8px rgba(56, 128, 135, 0.25);
         }
 
         .brand-title {
@@ -80,15 +88,16 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            color: var(--text-main);
         }
 
         .brand-badge {
             font-size: 10px;
             font-weight: 700;
-            padding: 2px 7px;
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--mesh-green);
-            border: 1px solid rgba(16, 185, 129, 0.35);
+            padding: 2px 8px;
+            background: var(--mint-soft);
+            color: #1A543A;
+            border: 1px solid #A3D8B4;
             border-radius: 12px;
         }
 
@@ -100,7 +109,7 @@
         /* Protocols Switcher */
         .mode-toggles {
             display: flex;
-            background: var(--bg-deep);
+            background: #EBF4F5;
             padding: 3px;
             border-radius: 8px;
             border: 1px solid var(--border-line);
@@ -119,10 +128,10 @@
         }
 
         .mode-toggle-btn.active {
-            background: var(--bg-elevated);
-            color: var(--mesh-blue);
-            border: 1px solid var(--border-line);
-            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            background: #FFFFFF;
+            color: var(--teal-deep);
+            border: 1px solid var(--teal-soft);
+            box-shadow: 0 1px 4px rgba(56, 128, 135, 0.12);
         }
 
         /* Top Action Buttons */
@@ -133,7 +142,7 @@
         }
 
         .btn {
-            background: var(--bg-elevated);
+            background: #FFFFFF;
             color: var(--text-main);
             border: 1px solid var(--border-line);
             padding: 6px 14px;
@@ -145,35 +154,41 @@
             align-items: center;
             gap: 6px;
             transition: all 0.15s;
+            box-shadow: 0 1px 2px rgba(56, 128, 135, 0.04);
         }
 
         .btn:hover {
             background: var(--bg-hover);
+            border-color: var(--teal-soft);
+            color: var(--teal-deep);
         }
 
         .btn-primary {
-            background: var(--mesh-blue);
-            border-color: var(--mesh-blue);
-            color: #fff;
+            background: var(--teal-deep);
+            border-color: var(--teal-deep);
+            color: #FFFFFF;
         }
 
         .btn-primary:hover {
-            background: #2563eb;
+            background: #2D676D;
+            border-color: #2D676D;
+            color: #FFFFFF;
         }
 
         .btn-sos {
-            background: var(--mesh-red);
-            border-color: var(--mesh-red);
-            color: #fff;
+            background: #D97757;
+            border-color: #D97757;
+            color: #FFFFFF;
         }
 
         .btn-sos:hover {
-            background: #dc2626;
+            background: #C46243;
+            border-color: #C46243;
         }
 
         /* Faculty Demonstration Control Banner */
         .demo-bar {
-            background: #0f172a;
+            background: #F8FBFA;
             border-bottom: 1px solid var(--border-line);
             padding: 8px 20px;
             display: flex;
@@ -186,7 +201,7 @@
 
         /* Battery Management & Tuning Bar */
         .battery-bar {
-            background: #0a1122;
+            background: #EFF6F7;
             border-bottom: 1px solid var(--border-line);
             padding: 6px 20px;
             display: flex;
@@ -212,10 +227,10 @@
         }
 
         .battery-chip {
-            background: var(--bg-elevated);
+            background: #FFFFFF;
             border: 1px solid var(--border-line);
-            padding: 2px 7px;
-            border-radius: 4px;
+            padding: 3px 8px;
+            border-radius: 5px;
             font-family: var(--font-mono);
             font-size: 10px;
             color: var(--text-main);
@@ -225,19 +240,20 @@
             align-items: center;
             gap: 3px;
             white-space: nowrap;
+            box-shadow: 0 1px 2px rgba(56, 128, 135, 0.04);
         }
 
         .battery-chip:hover {
-            border-color: var(--mesh-amber);
-            background: var(--bg-hover);
+            border-color: var(--teal-deep);
+            background: #F0F8F8;
         }
 
         .battery-chip strong {
-            color: var(--mesh-green);
+            color: #2B7A58;
         }
 
         .battery-chip.low strong {
-            color: var(--mesh-red);
+            color: var(--mesh-amber);
         }
 
         .demo-actions {
@@ -249,16 +265,16 @@
         .demo-tag {
             font-size: 11px;
             font-weight: 800;
-            color: var(--mesh-blue);
+            color: var(--teal-deep);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-right: 4px;
         }
 
         .trigger-btn {
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid #334155;
-            color: var(--text-main);
+            background: #FFFFFF;
+            border: 1px solid var(--border-line);
+            color: var(--teal-deep);
             padding: 4px 10px;
             font-size: 11px;
             font-weight: 600;
@@ -268,11 +284,12 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
+            box-shadow: 0 1px 2px rgba(56, 128, 135, 0.03);
         }
 
         .trigger-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: var(--mesh-blue);
+            background: #EBF4F5;
+            border-color: var(--teal-soft);
         }
 
         .status-telemetry {
@@ -312,19 +329,21 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            background: rgba(19, 27, 46, 0.90);
+            background: rgba(255, 255, 255, 0.94);
             backdrop-filter: blur(8px);
             padding: 6px 14px;
             border-radius: 8px;
             border: 1px solid var(--border-line);
+            box-shadow: 0 2px 10px rgba(56, 128, 135, 0.08);
+            color: var(--text-main);
         }
 
         .status-pulse {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: var(--mesh-green);
-            box-shadow: 0 0 10px var(--mesh-green);
+            background: #2B7A58;
+            box-shadow: 0 0 10px #2B7A58;
             animation: pulse-dot 1.8s infinite;
         }
 
@@ -342,22 +361,23 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(19, 27, 46, 0.90);
+            background: rgba(255, 255, 255, 0.94);
             backdrop-filter: blur(8px);
             padding: 4px 8px;
             border-radius: 8px;
             border: 1px solid var(--border-line);
+            box-shadow: 0 2px 10px rgba(56, 128, 135, 0.08);
         }
 
         .sim-timer-pill {
             font-size: 11px;
             font-family: var(--font-mono);
-            color: var(--mesh-cyan);
+            color: var(--teal-deep);
             font-weight: 700;
             padding: 3px 8px;
-            background: rgba(6, 182, 212, 0.12);
+            background: var(--ice-blue);
             border-radius: 4px;
-            border: 1px solid rgba(6, 182, 212, 0.25);
+            border: 1px solid var(--teal-soft);
         }
 
         #topologyCanvas {
@@ -370,7 +390,7 @@
         /* Event Ticker */
         .bottom-ticker {
             height: 38px;
-            background: var(--bg-card);
+            background: #FFFFFF;
             border-top: 1px solid var(--border-line);
             display: flex;
             align-items: center;
@@ -380,16 +400,17 @@
             font-family: var(--font-mono);
             color: var(--text-sub);
             flex-shrink: 0;
+            box-shadow: 0 -1px 3px rgba(56, 128, 135, 0.03);
         }
 
         .ticker-pill {
             font-size: 10px;
             font-weight: 700;
-            padding: 2px 7px;
-            background: var(--bg-elevated);
-            color: var(--mesh-blue);
+            padding: 2px 8px;
+            background: var(--ice-blue);
+            color: var(--teal-deep);
             border-radius: 4px;
-            border: 1px solid var(--border-line);
+            border: 1px solid var(--teal-soft);
             text-transform: uppercase;
         }
 
@@ -402,7 +423,7 @@
 
         /* Right Pane: Offline Messenger */
         .messenger-pane {
-            background: var(--bg-card);
+            background: #FFFFFF;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -414,11 +435,12 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            background: #FFFFFF;
         }
 
         .messenger-tabs {
             display: flex;
-            background: var(--bg-deep);
+            background: #EDF6F7;
             padding: 3px;
             border-radius: 6px;
             border: 1px solid var(--border-line);
@@ -437,12 +459,14 @@
         }
 
         .messenger-tab.active {
-            background: var(--bg-elevated);
-            color: var(--text-main);
+            background: #FFFFFF;
+            color: var(--teal-deep);
+            box-shadow: 0 1px 3px rgba(56, 128, 135, 0.08);
         }
 
         .messenger-tab.active.sos-tab {
-            color: var(--mesh-red);
+            color: var(--teal-deep);
+            font-weight: 700;
         }
 
         .strategy-selector-row {
@@ -454,20 +478,25 @@
 
         .strategy-dropdown {
             flex: 1;
-            background: var(--bg-deep);
-            border: 1px solid #334155;
+            background: #FFFFFF;
+            border: 1px solid var(--border-line);
             color: var(--text-main);
             font-size: 11px;
             font-weight: 600;
             padding: 6px 8px;
             border-radius: 6px;
             outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .strategy-dropdown:focus {
+            border-color: var(--teal-deep);
         }
 
         /* Message Compose Box */
         .compose-area {
             padding: 14px 18px;
-            background: #111a2d;
+            background: #F8FBFA;
             border-bottom: 1px solid var(--border-line);
             display: flex;
             flex-direction: column;
@@ -491,14 +520,19 @@
 
         .select-phone {
             width: 100%;
-            background: var(--bg-deep);
-            border: 1px solid #334155;
+            background: #FFFFFF;
+            border: 1px solid var(--border-line);
             color: var(--text-main);
             font-size: 12px;
             font-weight: 600;
             padding: 6px 8px;
             border-radius: 6px;
             outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .select-phone:focus {
+            border-color: var(--teal-deep);
         }
 
         .templates-row {
@@ -508,7 +542,7 @@
         }
 
         .pill-template {
-            background: var(--bg-elevated);
+            background: #FFFFFF;
             border: 1px solid var(--border-line);
             color: var(--text-sub);
             font-size: 10px;
@@ -516,12 +550,13 @@
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.15s;
+            box-shadow: 0 1px 2px rgba(56, 128, 135, 0.03);
         }
 
         .pill-template:hover {
-            color: var(--text-main);
-            border-color: var(--mesh-blue);
-            background: var(--bg-hover);
+            color: var(--teal-deep);
+            border-color: var(--teal-soft);
+            background: var(--ice-blue);
         }
 
         .input-send-row {
@@ -531,17 +566,18 @@
 
         .input-send-row input {
             flex: 1;
-            background: var(--bg-deep);
-            border: 1px solid #334155;
+            background: #FFFFFF;
+            border: 1px solid var(--border-line);
             color: var(--text-main);
             padding: 8px 12px;
             border-radius: 6px;
             font-size: 12px;
             outline: none;
+            transition: border-color 0.15s;
         }
 
         .input-send-row input:focus {
-            border-color: var(--mesh-blue);
+            border-color: var(--teal-deep);
         }
 
         /* Chat Stream */
@@ -552,34 +588,35 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            background: var(--bg-card);
+            background: var(--bg-deep);
         }
 
         .chat-bubble {
-            background: var(--bg-elevated);
+            background: #FFFFFF;
             border: 1px solid var(--border-line);
             border-radius: 8px;
             padding: 12px;
             display: flex;
             flex-direction: column;
             gap: 6px;
+            box-shadow: 0 1px 4px rgba(56, 128, 135, 0.05);
         }
 
         .chat-bubble.delivered {
-            border-left: 3px solid var(--mesh-green);
+            border-left: 4px solid var(--teal-deep);
         }
 
         .chat-bubble.in-transit {
-            border-left: 3px solid var(--mesh-blue);
+            border-left: 4px solid var(--teal-soft);
         }
 
         .chat-bubble.failed {
-            border-left: 3px solid var(--mesh-red);
+            border-left: 4px solid var(--mesh-amber);
         }
 
         .chat-bubble.broadcast {
-            border-left: 3px solid var(--mesh-red);
-            background: #1c1926;
+            border-left: 4px solid var(--teal-deep);
+            background: #F3F9F8;
         }
 
         .bubble-header {
@@ -598,23 +635,26 @@
             font-size: 9px;
             font-weight: 700;
             text-transform: uppercase;
-            padding: 2px 6px;
+            padding: 2px 7px;
             border-radius: 4px;
         }
 
         .badge-status.DELIVERED {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--mesh-green);
+            background: var(--mint-soft);
+            color: #1A543A;
+            border: 1px solid #A3D8B4;
         }
 
         .badge-status.IN_TRANSIT {
-            background: rgba(59, 130, 246, 0.2);
-            color: var(--mesh-blue);
+            background: var(--ice-blue);
+            color: var(--teal-deep);
+            border: 1px solid var(--teal-soft);
         }
 
         .badge-status.FAILED {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--mesh-red);
+            background: #FDEEEC;
+            color: var(--mesh-amber);
+            border: 1px solid #F5C6BA;
         }
 
         .bubble-text {
@@ -630,28 +670,32 @@
             gap: 5px;
             font-size: 10px;
             font-family: var(--font-mono);
-            background: rgba(0,0,0,0.3);
+            background: #EDF6F7;
             padding: 5px 8px;
             border-radius: 4px;
+            border: 1px solid var(--border-line);
             overflow-x: auto;
         }
 
         .hop-step {
             padding: 2px 6px;
-            background: var(--bg-hover);
+            background: #FFFFFF;
+            border: 1px solid var(--border-line);
             border-radius: 3px;
             color: var(--text-sub);
         }
 
         .hop-step.active {
-            background: var(--mesh-blue);
-            color: #fff;
+            background: var(--teal-deep);
+            border-color: var(--teal-deep);
+            color: #FFFFFF;
             font-weight: 700;
         }
 
         .hop-step.done {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--mesh-green);
+            background: var(--mint-soft);
+            border-color: #A3D8B4;
+            color: #1A543A;
         }
 
         .hop-arrow {
@@ -662,7 +706,7 @@
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.75);
+            background: rgba(28, 59, 63, 0.45);
             backdrop-filter: blur(4px);
             display: none;
             align-items: center;
@@ -671,8 +715,8 @@
         }
 
         .modal-box {
-            background: var(--bg-card);
-            border: 1px solid #334155;
+            background: #FFFFFF;
+            border: 1px solid var(--border-line);
             border-radius: 12px;
             width: 820px;
             max-width: 90vw;
@@ -680,7 +724,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+            box-shadow: 0 20px 50px rgba(28, 59, 63, 0.2);
         }
 
         .modal-head {
@@ -689,6 +733,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            background: #F8FBFA;
         }
 
         .modal-content {
@@ -697,6 +742,7 @@
             display: flex;
             flex-direction: column;
             gap: 18px;
+            background: #FFFFFF;
         }
 
         .benchmark-grid {
@@ -706,7 +752,7 @@
         }
 
         .bench-card {
-            background: var(--bg-elevated);
+            background: #F8FBFA;
             border: 1px solid var(--border-line);
             border-radius: 8px;
             padding: 14px;
@@ -716,8 +762,8 @@
         }
 
         .bench-card.proposed {
-            border: 2px solid var(--mesh-green);
-            background: #0d281e;
+            border: 2px solid var(--teal-deep);
+            background: #EFF8F5;
         }
 
         .bench-name {
@@ -725,21 +771,23 @@
             font-weight: 700;
             height: 32px;
             line-height: 1.3;
+            color: var(--text-main);
         }
 
         .bench-metric-big {
             font-size: 26px;
             font-weight: 800;
             font-family: var(--font-mono);
+            color: var(--text-main);
         }
 
         .bench-card.proposed .bench-metric-big {
-            color: var(--mesh-green);
+            color: var(--teal-deep);
         }
 
         .bench-bar {
             height: 6px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(56, 128, 135, 0.15);
             border-radius: 3px;
             overflow: hidden;
         }
@@ -755,6 +803,7 @@
             display: flex;
             justify-content: flex-end;
             gap: 10px;
+            background: #F8FBFA;
         }
     </style>
 </head>
@@ -851,10 +900,10 @@
 
             <div class="canvas-overlay-controls">
                 <span class="sim-timer-pill" id="lblTimer">0.0s Elapsed</span>
-                <button class="btn" id="btnRewind" onclick="triggerReplay()" style="padding: 4px 10px; font-size: 11px; background: #334155; color: #f1f5f9;" title="Replay step-by-step back to initial state">
+                <button class="btn btn-primary" id="btnRewind" onclick="triggerReplay()" style="padding: 4px 10px; font-size: 11px;" title="Replay step-by-step back to initial state">
                     ⏪ Replay Back
                 </button>
-                <button class="btn" id="btnStepBack" onclick="stepBackSim()" style="padding: 4px 8px; font-size: 11px; background: #1e293b; color: #94a3b8;" title="Step -1 Hop back">
+                <button class="btn" id="btnStepBack" onclick="stepBackSim()" style="padding: 4px 8px; font-size: 11px;" title="Step -1 Hop back">
                     ⏮ Step -1
                 </button>
                 <button class="btn btn-primary" id="btnStep" onclick="stepSim()" style="padding: 4px 12px; font-size: 11px;">
@@ -1221,7 +1270,20 @@
             if (!ctx || !state) return;
             const w = canvas.width;
             const h = canvas.height;
-            ctx.clearRect(0, 0, w, h);
+            // 0. Clean Alabaster Background & Subtle Technical Grid (from Coolors Palette: #F6F6F2)
+            ctx.fillStyle = "#F6F6F2";
+            ctx.fillRect(0, 0, w, h);
+
+            // Subtle modern dot grid
+            ctx.fillStyle = "rgba(111, 179, 184, 0.25)";
+            const stepGrid = 42;
+            for (let gx = 20; gx < w; gx += stepGrid) {
+                for (let gy = 20; gy < h; gy += stepGrid) {
+                    ctx.beginPath();
+                    ctx.arc(gx, gy, 1.4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
 
             const nodes = state.nodes || [];
             if (nodes.length === 0) return;
@@ -1253,25 +1315,25 @@
 
             const rangeRadius = (state.range || 36.0) * scale;
 
-            // 1. Draw Prominent Tower Coverage Circles
+            // 1. Draw Prominent Tower Coverage Circles (Coolors: #BADFE7, #388087, #C2EDCE)
             // Sender Phone (N1) Tower Range
             const node1 = nodes.find(n => n.id === 'N1');
             if (node1) {
                 const p1 = toScreen(node1.x, node1.y);
                 ctx.beginPath();
                 ctx.arc(p1.x, p1.y, rangeRadius, 0, Math.PI * 2);
-                ctx.fillStyle = "rgba(6, 182, 212, 0.05)";
+                ctx.fillStyle = "rgba(186, 223, 231, 0.35)"; // Soft Ice Blue tint
                 ctx.fill();
-                ctx.strokeStyle = "rgba(6, 182, 212, 0.4)";
-                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = "rgba(111, 179, 184, 0.70)";
+                ctx.lineWidth = 1.6;
                 ctx.setLineDash([5, 4]);
                 ctx.stroke();
                 ctx.setLineDash([]);
 
                 ctx.font = "bold 9px 'JetBrains Mono', monospace";
-                ctx.fillStyle = "#22d3ee";
+                ctx.fillStyle = "#388087";
                 ctx.textAlign = "center";
-                ctx.fillText("Phone 1 Tower Coverage (36m)", p1.x, p1.y - rangeRadius - 4);
+                ctx.fillText("Phone 1 Tower Coverage (36m)", p1.x, p1.y - rangeRadius - 5);
             }
 
             // Active Relay Phone Tower Range
@@ -1280,18 +1342,18 @@
                 const rPos = toScreen(relayNode.x, relayNode.y);
                 ctx.beginPath();
                 ctx.arc(rPos.x, rPos.y, rangeRadius, 0, Math.PI * 2);
-                ctx.fillStyle = "rgba(59, 130, 246, 0.08)";
+                ctx.fillStyle = "rgba(56, 128, 135, 0.08)";
                 ctx.fill();
-                ctx.strokeStyle = "#3b82f6";
+                ctx.strokeStyle = "#388087";
                 ctx.lineWidth = 2.0;
                 ctx.setLineDash([6, 3]);
                 ctx.stroke();
                 ctx.setLineDash([]);
 
                 ctx.font = "bold 9px 'JetBrains Mono', monospace";
-                ctx.fillStyle = "#60a5fa";
+                ctx.fillStyle = "#2D676D";
                 ctx.textAlign = "center";
-                ctx.fillText(`${state.relayName || state.relay} Relay Tower Range (36m)`, rPos.x, rPos.y - rangeRadius - 4);
+                ctx.fillText(`${state.relayName || state.relay} Relay Tower Range (36m)`, rPos.x, rPos.y - rangeRadius - 5);
             }
 
             // Destination Phone (N8) Range
@@ -1300,18 +1362,18 @@
                 const p8 = toScreen(node8.x, node8.y);
                 ctx.beginPath();
                 ctx.arc(p8.x, p8.y, rangeRadius, 0, Math.PI * 2);
-                ctx.fillStyle = "rgba(16, 185, 129, 0.04)";
+                ctx.fillStyle = "rgba(194, 237, 206, 0.40)"; // Soft Mint tint
                 ctx.fill();
-                ctx.strokeStyle = "rgba(16, 185, 129, 0.35)";
-                ctx.lineWidth = 1.2;
+                ctx.strokeStyle = "rgba(43, 122, 88, 0.45)";
+                ctx.lineWidth = 1.5;
                 ctx.setLineDash([4, 4]);
                 ctx.stroke();
                 ctx.setLineDash([]);
 
                 ctx.font = "bold 9px 'JetBrains Mono', monospace";
-                ctx.fillStyle = "#34d399";
+                ctx.fillStyle = "#2B7A58";
                 ctx.textAlign = "center";
-                ctx.fillText("Phone 8 Destination Range (36m)", p8.x, p8.y - rangeRadius - 4);
+                ctx.fillText("Phone 8 Destination Range (36m)", p8.x, p8.y - rangeRadius - 5);
             }
 
             // 2. Draw Bluetooth Mesh Links
@@ -1326,17 +1388,17 @@
                     ctx.beginPath();
                     ctx.moveTo(pa.x, pa.y);
                     ctx.lineTo(pb.x, pb.y);
-                    ctx.strokeStyle = "#334155";
-                    ctx.lineWidth = 1.4;
+                    ctx.strokeStyle = "#A4C7CB";
+                    ctx.lineWidth = 1.6;
                     ctx.stroke();
 
                     // RSSI signal tag
                     const mx = (pa.x + pb.x) / 2;
                     const my = (pa.y + pb.y) / 2;
                     ctx.font = "9px 'JetBrains Mono', monospace";
-                    ctx.fillStyle = "rgba(148, 163, 184, 0.75)";
+                    ctx.fillStyle = "#496F73";
                     ctx.textAlign = "center";
-                    ctx.fillText(`${l.rssi}dBm`, mx, my - 3);
+                    ctx.fillText(`${l.rssi}dBm`, mx, my - 4);
                 }
             });
 
@@ -1358,7 +1420,7 @@
                         ctx.save();
                         ctx.beginPath();
                         ctx.arc(sp.x, sp.y, pulseRadius, 0, Math.PI * 2);
-                        ctx.strokeStyle = `rgba(16, 185, 129, ${Math.max(0.06, 0.45 - (pulseRadius / (rangeRadius * 3.2)) * 0.4)})`;
+                        ctx.strokeStyle = `rgba(56, 128, 135, ${Math.max(0.08, 0.45 - (pulseRadius / (rangeRadius * 3.2)) * 0.4)})`;
                         ctx.lineWidth = 2.4;
                         ctx.setLineDash([6, 4]);
                         ctx.stroke();
@@ -1374,7 +1436,7 @@
                             ctx.beginPath();
                             ctx.moveTo(sp.x, sp.y);
                             ctx.lineTo(rp.x, rp.y);
-                            ctx.strokeStyle = "rgba(52, 211, 153, 0.45)";
+                            ctx.strokeStyle = "rgba(43, 122, 88, 0.45)";
                             ctx.lineWidth = 2.0;
                             ctx.setLineDash([4, 4]);
                             ctx.stroke();
@@ -1383,7 +1445,7 @@
                     });
                     
                     ctx.font = "bold 11px 'JetBrains Mono', monospace";
-                    ctx.fillStyle = "#34d399";
+                    ctx.fillStyle = "#2B7A58";
                     ctx.textAlign = "center";
                     ctx.fillText(`📢 360° EMERGENCY SOS FLOOD (${reached.length}/8 PHONES REACHED)`, sp.x, sp.y - rangeRadius * 2.8);
                 }
@@ -1397,7 +1459,7 @@
                         else ctx.lineTo(rp.x, rp.y);
                     }
                 }
-                ctx.strokeStyle = "rgba(6, 182, 212, 0.45)";
+                ctx.strokeStyle = "rgba(56, 128, 135, 0.35)";
                 ctx.lineWidth = 3.5;
                 ctx.stroke();
             }
@@ -1412,13 +1474,13 @@
                     const pf = toScreen(fromNode.x, fromNode.y);
                     const pt = toScreen(toNode.x, toNode.y);
 
-                    // Curved Orange Handover Arc
+                    // Curved Terracotta Handover Arc
                     ctx.beginPath();
                     ctx.moveTo(pf.x, pf.y);
                     const ctrlX = (pf.x + pt.x) / 2 - 25;
                     const ctrlY = (pf.y + pt.y) / 2;
                     ctx.quadraticCurveTo(ctrlX, ctrlY, pt.x, pt.y);
-                    ctx.strokeStyle = "#f59e0b";
+                    ctx.strokeStyle = "#D97757";
                     ctx.lineWidth = 3.0;
                     ctx.setLineDash([5, 3]);
                     ctx.stroke();
@@ -1426,7 +1488,7 @@
 
                     // Handover Pill
                     ctx.font = "bold 10px 'JetBrains Mono', monospace";
-                    ctx.fillStyle = "#fbbf24";
+                    ctx.fillStyle = "#D97757";
                     ctx.textAlign = "center";
                     ctx.fillText(`⚡ HANDOVER (${latestH.prev}➔${latestH.next})`, ctrlX - 10, ctrlY);
                 }
@@ -1446,14 +1508,14 @@
                         const pFrom = toScreen(nFrom.x, nFrom.y);
                         const pTo = toScreen(nTo.x, nTo.y);
 
-                        // Glowing Blue Energy Link Line
+                        // Glowing Teal Link Line
                         ctx.save();
                         ctx.beginPath();
                         ctx.moveTo(pFrom.x, pFrom.y);
                         ctx.lineTo(pTo.x, pTo.y);
-                        ctx.shadowColor = "#38bdf8";
-                        ctx.shadowBlur = 18;
-                        ctx.strokeStyle = "#38bdf8";
+                        ctx.shadowColor = "rgba(111, 179, 184, 0.45)";
+                        ctx.shadowBlur = 12;
+                        ctx.strokeStyle = "#388087";
                         ctx.lineWidth = 4.5;
                         ctx.stroke();
                         ctx.restore();
@@ -1464,15 +1526,20 @@
                         const curY = pFrom.y + (pTo.y - pFrom.y) * animT;
 
                         ctx.save();
-                        ctx.shadowColor = "#06b6d4";
-                        ctx.shadowBlur = 24;
+                        ctx.shadowColor = "rgba(56, 128, 135, 0.5)";
+                        ctx.shadowBlur = 16;
                         ctx.beginPath();
                         ctx.arc(curX, curY, 8, 0, Math.PI * 2);
-                        ctx.fillStyle = "#ffffff";
+                        ctx.fillStyle = "#388087";
                         ctx.fill();
-                        ctx.strokeStyle = "#38bdf8";
+                        ctx.strokeStyle = "#BADFE7";
                         ctx.lineWidth = 3.0;
                         ctx.stroke();
+
+                        ctx.beginPath();
+                        ctx.arc(curX, curY, 3, 0, Math.PI * 2);
+                        ctx.fillStyle = "#FFFFFF";
+                        ctx.fill();
                         ctx.restore();
                     }
                 }
@@ -1497,52 +1564,52 @@
 
                 // Specific Node Color and Glow Logic
                 if (isCurrentPacketHolder) {
-                    // Specific node currently holding/transmitting the packet: Radiant Electric Cyan Pulse
-                    ctx.shadowColor = "#38bdf8";
-                    ctx.shadowBlur = 25;
+                    // Specific node currently holding/transmitting the packet: Deep Teal with Soft Cyan halo
+                    ctx.shadowColor = "rgba(56, 128, 135, 0.45)";
+                    ctx.shadowBlur = 20;
                     
                     // Expanding pulse halo
                     const pulseR = 24 + 4 * Math.sin(Date.now() / 200);
                     ctx.beginPath();
                     ctx.arc(pos.x, pos.y, pulseR, 0, Math.PI * 2);
-                    ctx.strokeStyle = "rgba(56, 189, 248, 0.75)";
+                    ctx.strokeStyle = "rgba(111, 179, 184, 0.85)";
                     ctx.lineWidth = 2.5;
                     ctx.stroke();
 
                     ctx.beginPath();
                     ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
-                    ctx.fillStyle = "#0284c7"; // Radiant vibrant cyan
-                    ctx.strokeStyle = "#ffffff";
+                    ctx.fillStyle = "#388087"; // Deep Teal
+                    ctx.strokeStyle = "#BADFE7";
                     ctx.lineWidth = 3.5;
                     ctx.fill();
                     ctx.stroke();
                 } else if (isBcReached) {
-                    // In 360° Broadcast: All reached phones turn vibrant Emerald Green
-                    ctx.shadowColor = "#10b981";
-                    ctx.shadowBlur = 22;
+                    // In 360° Broadcast: All reached phones turn Soft Mint Green
+                    ctx.shadowColor = "rgba(43, 122, 88, 0.35)";
+                    ctx.shadowBlur = 18;
 
                     const pulseR = 23 + 3 * Math.sin(Date.now() / 250);
                     ctx.beginPath();
                     ctx.arc(pos.x, pos.y, pulseR, 0, Math.PI * 2);
-                    ctx.strokeStyle = "rgba(16, 185, 129, 0.65)";
+                    ctx.strokeStyle = "rgba(43, 122, 88, 0.6)";
                     ctx.lineWidth = 2.2;
                     ctx.stroke();
 
                     ctx.beginPath();
                     ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
-                    ctx.fillStyle = "#064e3b"; // Rich Emerald
-                    ctx.strokeStyle = "#34d399";
-                    ctx.lineWidth = 3.5;
+                    ctx.fillStyle = "#C2EDCE"; // Soft Mint
+                    ctx.strokeStyle = "#2B7A58";
+                    ctx.lineWidth = 3.0;
                     ctx.fill();
                     ctx.stroke();
                 } else if (isDeliveredTarget) {
                     // Destination node when packet is successfully delivered
-                    ctx.shadowColor = "#10b981";
-                    ctx.shadowBlur = 24;
+                    ctx.shadowColor = "rgba(43, 122, 88, 0.4)";
+                    ctx.shadowBlur = 20;
                     ctx.beginPath();
                     ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
-                    ctx.fillStyle = "#047857";
-                    ctx.strokeStyle = "#34d399";
+                    ctx.fillStyle = "#C2EDCE";
+                    ctx.strokeStyle = "#2B7A58";
                     ctx.lineWidth = 3.5;
                     ctx.fill();
                     ctx.stroke();
@@ -1550,19 +1617,19 @@
                     // Previously traversed hops along route
                     ctx.beginPath();
                     ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
-                    ctx.fillStyle = "#0f4c3a";
-                    ctx.strokeStyle = "#10b981";
+                    ctx.fillStyle = "#EAF7EE";
+                    ctx.strokeStyle = "#55A885";
                     ctx.lineWidth = 2.5;
                     ctx.fill();
                     ctx.stroke();
                 } else if (isRelay) {
                     // Active intermediate relay
-                    ctx.shadowColor = "#3b82f6";
-                    ctx.shadowBlur = 14;
+                    ctx.shadowColor = "rgba(56, 128, 135, 0.25)";
+                    ctx.shadowBlur = 12;
                     ctx.beginPath();
                     ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
-                    ctx.fillStyle = "#1e3a8a"; // Relay blue
-                    ctx.strokeStyle = "#60a5fa";
+                    ctx.fillStyle = "#BADFE7"; // Ice blue
+                    ctx.strokeStyle = "#388087";
                     ctx.lineWidth = 3.0;
                     ctx.fill();
                     ctx.stroke();
@@ -1570,18 +1637,20 @@
                     // Drained warning
                     ctx.beginPath();
                     ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
-                    ctx.fillStyle = "#450a0a";
-                    ctx.strokeStyle = "#ef4444";
+                    ctx.fillStyle = "#FDEEEC";
+                    ctx.strokeStyle = "#D97757";
                     ctx.lineWidth = 2.5;
                     ctx.fill();
                     ctx.stroke();
                 } else {
-                    // Default phone node
+                    // Default phone node: Clean white surface with teal border
+                    ctx.shadowColor = "rgba(56, 128, 135, 0.1)";
+                    ctx.shadowBlur = 6;
                     ctx.beginPath();
                     ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
-                    ctx.fillStyle = "#1e293b";
-                    ctx.strokeStyle = "#475569";
-                    ctx.lineWidth = 1.6;
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.strokeStyle = "#6FB3B8";
+                    ctx.lineWidth = 2.2;
                     ctx.fill();
                     ctx.stroke();
                 }
@@ -1590,7 +1659,11 @@
 
                 // Phone Label Inside
                 ctx.font = "bold 11px Inter, sans-serif";
-                ctx.fillStyle = "#ffffff";
+                if (isCurrentPacketHolder) {
+                    ctx.fillStyle = "#FFFFFF";
+                } else {
+                    ctx.fillStyle = "#1A393C";
+                }
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillText(n.id, pos.x, pos.y);
@@ -1598,42 +1671,42 @@
                 // Friendly Name & Dynamic Status Below
                 ctx.font = "bold 10px Inter, sans-serif";
                 if (isCurrentPacketHolder) {
-                    ctx.fillStyle = "#38bdf8";
+                    ctx.fillStyle = "#388087";
                     ctx.fillText(`⚡ [PACKET HERE (HOP ${activeUnicast.currentHop})]`, pos.x, pos.y + 30);
                 } else if (isBcReached) {
-                    ctx.fillStyle = "#34d399";
+                    ctx.fillStyle = "#2B7A58";
                     ctx.fillText(`✓ [SOS RECEIVED]`, pos.x, pos.y + 30);
                 } else if (isDeliveredTarget) {
-                    ctx.fillStyle = "#34d399";
+                    ctx.fillStyle = "#2B7A58";
                     ctx.fillText(`🎉 [DELIVERED & ACK'D]`, pos.x, pos.y + 30);
                 } else if (isTraversedHop) {
-                    ctx.fillStyle = "#10b981";
+                    ctx.fillStyle = "#2B7A58";
                     ctx.fillText(`✓ [FORWARDED]`, pos.x, pos.y + 30);
                 } else if (isRelay) {
-                    ctx.fillStyle = "#60a5fa";
+                    ctx.fillStyle = "#388087";
                     ctx.fillText(`${getDeviceName(n.id)} [RELAY]`, pos.x, pos.y + 30);
                 } else if (isLowBatt) {
-                    ctx.fillStyle = "#ef4444";
+                    ctx.fillStyle = "#D97757";
                     ctx.fillText(`${getDeviceName(n.id)} [${Math.round(n.battery)}% DRAINED]`, pos.x, pos.y + 30);
                 } else if (n.id === 'N1') {
-                    ctx.fillStyle = "#22d3ee";
+                    ctx.fillStyle = "#388087";
                     ctx.fillText(`Phone 1 [SENDER]`, pos.x, pos.y + 30);
                 } else if (n.id === 'N8') {
-                    ctx.fillStyle = "#34d399";
+                    ctx.fillStyle = "#2B7A58";
                     ctx.fillText(`Phone 8 [DEST]`, pos.x, pos.y + 30);
                 } else {
-                    ctx.fillStyle = "#94a3b8";
+                    ctx.fillStyle = "#496F73";
                     ctx.fillText(getDeviceName(n.id), pos.x, pos.y + 30);
                 }
 
                 // Battery Gauge Bar Above Phone
                 const bw = 28, bh = 4;
                 const bx = pos.x - bw / 2, by = pos.y - 28;
-                ctx.fillStyle = "rgba(0,0,0,0.6)";
+                ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
                 ctx.fillRect(bx, by, bw, bh);
 
                 const pct = Math.max(0, Math.min(100, n.battery)) / 100;
-                ctx.fillStyle = n.battery > 50 ? "#10b981" : (n.battery > 25 ? "#f59e0b" : "#ef4444");
+                ctx.fillStyle = n.battery > 50 ? "#388087" : (n.battery > 25 ? "#6FB3B8" : "#D97757");
                 ctx.fillRect(bx, by, bw * pct, bh);
             });
         }
